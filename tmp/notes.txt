@@ -1,0 +1,18 @@
+TODO's are in:
+   ! server/src/server.ts
+   ! server/src/routes/api/weatherRoutes.ts
+   ! server/src/service/historyService.ts
+   ! server/src/service/weatherService.ts
+   ! server/src/routes/htmlRoutes.ts
+
+Dependencies:
+! server/src/server.ts
+import apiRoutes from './api/index.js';
+   ! server/src/routes/api/weatherRoutes.ts
+        // import HistoryService from '../../service/historyService.js';
+            ! server/src/service/historyService.ts
+        // import WeatherService from '../../service/weatherService.js';
+            ! server/src/service/weatherService.ts
+
+import htmlRoutes from './htmlRoutes.js';
+   ! server/src/routes/htmlRoutes.ts
