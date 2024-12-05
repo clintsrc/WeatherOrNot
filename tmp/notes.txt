@@ -1,11 +1,15 @@
-TODO's are in:
+===========
+TODO's
+===========
    ! server/src/server.ts
    ! server/src/routes/api/weatherRoutes.ts
    ! server/src/service/historyService.ts
    ! server/src/service/weatherService.ts
    ! server/src/routes/htmlRoutes.ts
 
-Dependencies:
+=============
+Dependencies
+=============
 ! server/src/server.ts
 import apiRoutes from './api/index.js';
    ! server/src/routes/api/weatherRoutes.ts
@@ -16,3 +20,30 @@ import apiRoutes from './api/index.js';
 
 import htmlRoutes from './htmlRoutes.js';
    ! server/src/routes/htmlRoutes.ts
+
+
+=============
+URL / key
+=============
+const data = null;
+
+const xhr = new XMLHttpRequest();
+xhr.withCredentials = true;
+
+xhr.addEventListener("readystatechange", function () {
+  if (this.readyState === this.DONE) {
+    console.log(this.responseText);
+  }
+});
+
+xhr.open("GET", "http://api.openweathermap.org/data/2.5/weather?q=Tigard&appid=993e26ca9bce60d27ace1c1645634a57");
+xhr.setRequestHeader("User-Agent", "insomnia/10.0.0");
+xhr.setRequestHeader("API_KEY", "http://api.openweathermap.org/data/2.5/forecast?id=524901&appid={API key}");
+
+xhr.send(data);
+
+
+=============
+Other
+=============
+server/db/searchHistory.json
