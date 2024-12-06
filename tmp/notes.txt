@@ -25,25 +25,30 @@ import htmlRoutes from './htmlRoutes.js';
 =============
 URL / key
 =============
-const data = null;
+http://api.openweathermap.org/geo/1.0/direct?q={city name},{state code},{country code}&limit={limit}&appid={API key}
+(ref: https://openweathermap.org/api/geocoding-api)
+So:
+http://api.openweathermap.org/geo/1.0/direct?q={city name}&limit={limit}&appid={API key}
+So:
+http://api.openweathermap.org/geo/1.0/direct?q=Tigard&limit=1&appid=993e26ca9bce60d27ace1c1645634a57
 
-const xhr = new XMLHttpRequest();
-xhr.withCredentials = true;
 
-xhr.addEventListener("readystatechange", function () {
-  if (this.readyState === this.DONE) {
-    console.log(this.responseText);
-  }
-});
 
-xhr.open("GET", "http://api.openweathermap.org/data/2.5/weather?q=Tigard&appid=993e26ca9bce60d27ace1c1645634a57");
-xhr.setRequestHeader("User-Agent", "insomnia/10.0.0");
-xhr.setRequestHeader("API_KEY", "http://api.openweathermap.org/data/2.5/forecast?id=524901&appid={API key}");
 
-xhr.send(data);
+Once you have the city's lat/long:
+Tigard:
+		"lon": -122.7715,
+		"lat": 45.4312
+Use:
+https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}
+(ref: https://openweathermap.org/forecast5)
+So:
+https://api.openweathermap.org/data/2.5/forecast?lat=45.4312&lon=-122.7715&appid=993e26ca9bce60d27ace1c1645634a57
 
 
 =============
 Other
 =============
 server/db/searchHistory.json
+
+
