@@ -1,9 +1,9 @@
 ===========
 TODO's
 ===========
-   ! server/src/server.ts
+   server/src/server.ts
    ! server/src/routes/api/weatherRoutes.ts
-   ! server/src/service/historyService.ts
+   ? server/src/service/historyService.ts
    ! server/src/service/weatherService.ts
    ! server/src/routes/htmlRoutes.ts
 
