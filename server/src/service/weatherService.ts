@@ -9,18 +9,18 @@ dotenv.config();
 
 // TODO: Define an interface for the Coordinates object
 /*
- * Geocoding API:
- * http://api.openweathermap.org/geo/1.0/direct?q={city name}&limit={limit}&appid={API key}
+ * 
+ * The Coordinates object enforces tracking a city's latitude and longitude
  *
  */
 interface Coordinates {
-  // eg.: receivePay(pay: number): number;
+  latitude: string;
+  longitude: string;
 }
 
 // TODO: Define a class for the Weather object
 /*
- * 5 day weather forecast:
- * https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}
+ * Weather data (e.g. current weather, forecasts).
  *
  */
 class Weather {
@@ -41,6 +41,11 @@ class WeatherService {
   }
   
   // TODO: Create fetchLocationData method
+  /*
+   * Makes a request to OpenWeather's geocoding API to determine a city's 
+   *    coordinates
+   *
+   */
   private async fetchLocationData(query: string) {
     try {
       const response = await fetch(query);
@@ -49,7 +54,7 @@ class WeatherService {
 
       //const mappedParks = await this.parkDataMapping(parks.data);
       //return mappedParks;
-    } catch {
+    } catch(err) {
       console.log('Error:', err);
       return err;
     }
@@ -59,18 +64,38 @@ class WeatherService {
   // private destructureLocationData(locationData: Coordinates): Coordinates {}
   
   // TODO: Create buildGeocodeQuery method
-  // Query for the city's coordinates
+  /*
+   * Construct the query string for the geocoding API
+   *    http://api.openweathermap.org/geo/1.0/direct?q={city name}&limit={limit}&appid={API key}
+   * 
+   */
   private buildGeocodeQuery(): string {
-    // passed into WeatherService from the env: baseURL, apiKey, cityName
+    const queryCityLimit = 1; // Only return 1 city coordinate. This could be improved
+    
+    let query = `${this.baseURL}/geo/1.0/direct?q=${this.cityName}&limit=${queryCityLimit}&appid=${this.apiKey}`;
 
-    query = `${this.baseURL}/?forecast?lat=${lat}&lon=${lon}&appid=${this.apiKey}`;
-    // http://api.openweathermap.org/geo/1.0/direct?q={city name}&limit={limit}&appid={API key}
-    // https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}
+    return query;
   }
   
   // TODO: Create buildWeatherQuery method
-  // Use the city's cooridinates to build the 5-day forecast query
-  // private buildWeatherQuery(coordinates: Coordinates): string {}
+  /*
+   * buildWeatherQuery()
+   *    Creates the query string for the weather API call using the coordinates 
+   *    for a city return from the geocoding API
+   *
+   * Parameter: 
+   *    Coordinates object with the city coordinates
+   * 
+   * Returns: 
+   *    Creates the query string for the weather API 5-day forecast call:
+   *    https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}
+   *
+   */
+  private buildWeatherQuery(coordinates: Coordinates): string {
+    let query = `${this.baseURL}/data/2.5/forecast?lat=${coordinates.latitude}&lon=${coordinates.longitude}&appid=${this.apiKey}`;
+    
+    return query;
+  }
   
   // TODO: Create fetchAndDestructureLocationData method
   // ??
