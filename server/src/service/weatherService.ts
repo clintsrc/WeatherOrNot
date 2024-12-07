@@ -20,7 +20,7 @@ interface Coordinates {
 
 // TODO: Define a class for the Weather object
 /*
- * Weather data (e.g. current weather, forecasts).
+ * Weather data (e.g. date, temp, wind, humidity).
  *
  */
 class Weather {

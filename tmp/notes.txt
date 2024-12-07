@@ -52,3 +52,50 @@ Other
 server/db/searchHistory.json
 
 
+
+
+async fetchWeatherData(coordinates: Coordinates): Promise<any> {
+  const query = this.buildWeatherQuery(coordinates);
+  const response = await fetch(query);
+  const weatherData = await response.json();
+  
+  // Parse the relevant fields
+  const forecast = this.parseWeatherData(weatherData);
+  return forecast;
+}
+
+
+date
+temp
+wind
+humidity
+
+{
+	"cod": "200",
+	"message": 0,
+	"cnt": 40,
+   "li          "id": 804,
+                  "main": "Clouds",
+                  "description": "overcast clouds",
+                  "icon": "04d"
+               }
+            ],
+            "clouds": {
+               "all": 94
+            },
+            "wind": {
+               "speed": 0.37,
+               "deg": 183,
+               "gust": 0.86
+            },
+            "visibility": 10000,
+            "pop": 0,
+            "sys": {
+               "pod": "d"
+            },
+            "dt_txt": "2024-12-11 18:00:00"
+         },
+         ...
+   ]
+   ..
+}
