@@ -98,37 +98,65 @@ class WeatherService {
   }
   
   // TODO: Create fetchAndDestructureLocationData method
-  // ??
-  // private async fetchAndDestructureLocationData() {}
+  /*
+   * This method handles both fetching the location data and destructuring the 
+   * response data.
+   * 
+   * It returns the city coordinates  // TODO does it? the sig doesn't have a
+   *    return... does this mean indirectly through the coordinate?
+   *
+   */
+  private async fetchAndDestructureLocationData() {
+    // fetchLocationData(city): This method makes the API call to get the location data for the specified city.
+    // destructureLocationData(locationData): This method is called to extract the latitude and longitude from the location data returned by fetchLocationData.
+  }
   
   // TODO: Create fetchWeatherData method
-  // ??
-  // private async fetchWeatherData(coordinates: Coordinates) {}
+  /*
+   * makes a request to the weather API using the city coordinates 
+   * and receives the weather data for that location.
+   *
+   */
+  private async fetchWeatherData(coordinates: Coordinates) {
+
+  }
   
   // TODO: Build parseCurrentWeather method
-  // pare the 5-day response
-  // private parseCurrentWeather(response: any) {}
+  /*
+   * Parses the response from the weather API, then extracts weather 
+   * information (e.g. temperature, conditions)
+   *
+   */
+  private parseCurrentWeather(response: any) {}
   
   // TODO: Complete buildForecastArray method
-  // private buildForecastArray(currentWeather: Weather, weatherData: any[]) {}
+  /*
+   * Processes the weather data and generates an array of forecast objects
+   * providing a 5-day weather forecast
+   *
+   */
+  private buildForecastArray(currentWeather: Weather, weatherData: any[]) {
+
+  }
   
   // TODO: Complete getWeatherForCity method
-  // Top level?
-  // async getWeatherForCity(city: string) {}
+  /*
+   * The main method. It takes a city name as input, fetches its coordinates, 
+   * and queries the openweather api again for the weather information. It 
+   * then parses the response for and returns the 5-day forecast
+   * 
+   */
+  async getWeatherForCity(city: string) {
+    // fetchAndDestructureLocationData()
+
+    // buildWeatherQuery(lat, lon): Constructs the weather query using the obtained latitude and longitude.
+    // fetchWeatherData(weatherQuery): Fetches the weather data using the constructed query.
+    // parseCurrentWeather(weatherData): Parses the current weather information from the fetched weather data.
+    // buildForecastArray(weatherData): Builds an array of the forecast data from the fetched weather data.
+
+    // return the parsed data: The parsed current weather data and the forecast array are returned to the caller.
+  }
 
 }
 
 export default new WeatherService();
-
-
-/*
-Expected Flow(?):
-Call getWeatherForCity(city) with a city name.
-Inside getWeatherForCity, call fetchLocationData(city) to get the coordinates.
-Use destructureLocationData to extract latitude and longitude.
-Build the weather query using buildWeatherQuery.
-Fetch the weather data using fetchWeatherData.
-Parse the current weather data using parseCurrentWeather.
-Build the forecast array using buildForecastArray.
-Return the parsed data to the caller.
- */
