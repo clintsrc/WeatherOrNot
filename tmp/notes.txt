@@ -1,0 +1,132 @@
+===========
+TODO's
+===========
+   server/src/server.ts
+   ! server/src/routes/api/weatherRoutes.ts
+   ? server/src/service/historyService.ts
+   ! server/src/service/weatherService.ts
+   ! server/src/routes/htmlRoutes.ts
+
+=============
+Dependencies
+=============
+! server/src/server.ts
+import apiRoutes from './api/index.js';
+   ! server/src/routes/api/weatherRoutes.ts
+        // import HistoryService from '../../service/historyService.js';
+            ! server/src/service/historyService.ts
+        // import WeatherService from '../../service/weatherService.js';
+            ! server/src/service/weatherService.ts
+
+import htmlRoutes from './htmlRoutes.js';
+   ! server/src/routes/htmlRoutes.ts
+
+
+=============
+URL / key
+=============
+http://api.openweathermap.org/geo/1.0/direct?q={city name},{state code},{country code}&limit={limit}&appid={API key}
+(ref: https://openweathermap.org/api/geocoding-api)
+So:
+http://api.openweathermap.org/geo/1.0/direct?q={city name}&limit={limit}&appid={API key}
+So:
+http://api.openweathermap.org/geo/1.0/direct?q=Tigard&limit=1&appid=993e26ca9bce60d27ace1c1645634a57
+
+
+
+
+Once you have the city's lat/long:
+Tigard:
+		"lon": -122.7715,
+		"lat": 45.4312
+Use:
+https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}
+(ref: https://openweathermap.org/forecast5)
+So:
+https://api.openweathermap.org/data/2.5/forecast?lat=45.4312&lon=-122.7715&appid=993e26ca9bce60d27ace1c1645634a57
+
+
+=============
+Other
+=============
+server/db/searchHistory.json
+
+
+
+
+async fetchWeatherData(coordinates: Coordinates): Promise<any> {
+  const query = this.buildWeatherQuery(coordinates);
+  const response = await fetch(query);
+  const weatherData = await response.json();
+  
+  // Parse the relevant fields
+  const forecast = this.parseWeatherData(weatherData);
+  return forecast;
+}
+
+
+date
+temp
+wind
+humidity
+
+{
+	"cod": "200",
+	"message": 0,
+	"cnt": 40,
+   "li          "id": 804,
+                  "main": "Clouds",
+                  "description": "overcast clouds",
+                  "icon": "04d"
+               }
+            ],
+            "clouds": {
+               "all": 94
+            },
+            "wind": {
+               "speed": 0.37,
+               "deg": 183,
+               "gust": 0.86
+            },
+            "visibility": 10000,
+            "pop": 0,
+            "sys": {
+               "pod": "d"
+            },
+            "dt_txt": "2024-12-11 18:00:00"
+         },
+         ...
+   ]
+   ..
+}
+
+
+===================================
+Functions related to the openweather api queries:
+1. Coordinates
+set coordinates query
+run the fetchcoordinates
+2. Current Weather:
+set the current weather query
+fetch the current weather
+5. *** These are missing from the starter code ***
+set the 5-day forecast query
+fetch the 5-day forecast
+
+
+Build the Forecast Query: You can create a method called buildForecastQuery that constructs the URL for the 5-day forecast API using the coordinates.
+
+private buildForecastQuery(coordinates: Coordinates): string {
+    const { lat, lon } = coordinates;
+    return `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${process.env.API_KEY}`;
+}
+Fetch the Forecast Data: Create a method called fetchForecastData that makes the API call to retrieve the 5-day forecast data.
+
+private async fetchForecastData(coordinates: Coordinates): Promise<any> {
+    const query = this.buildForecastQuery(coordinates);
+    const response = await fetch(query);
+    if (!response.ok) {
+        throw new Error('Failed to fetch forecast data');
+    }
+    return await response.json();
+}

@@ -1,3 +1,6 @@
+# Project specific data file
+searchHistory.json
+
 # Logs
 logs
 *.log
