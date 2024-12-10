@@ -99,3 +99,34 @@ humidity
    ]
    ..
 }
+
+
+===================================
+Functions related to the openweather api queries:
+1. Coordinates
+set coordinates query
+run the fetchcoordinates
+2. Current Weather:
+set the current weather query
+fetch the current weather
+5. *** These are missing from the starter code ***
+set the 5-day forecast query
+fetch the 5-day forecast
+
+
+Build the Forecast Query: You can create a method called buildForecastQuery that constructs the URL for the 5-day forecast API using the coordinates.
+
+private buildForecastQuery(coordinates: Coordinates): string {
+    const { lat, lon } = coordinates;
+    return `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${process.env.API_KEY}`;
+}
+Fetch the Forecast Data: Create a method called fetchForecastData that makes the API call to retrieve the 5-day forecast data.
+
+private async fetchForecastData(coordinates: Coordinates): Promise<any> {
+    const query = this.buildForecastQuery(coordinates);
+    const response = await fetch(query);
+    if (!response.ok) {
+        throw new Error('Failed to fetch forecast data');
+    }
+    return await response.json();
+}

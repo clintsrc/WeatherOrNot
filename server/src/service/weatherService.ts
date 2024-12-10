@@ -13,10 +13,10 @@ dotenv.config();
  * The Coordinates object enforces tracking a city's latitude and longitude
  *
  */
-// interface Coordinates {
-//   latitude: string;
-//   longitude: string;
-// }
+interface Coordinates {
+  lat: string;
+  lon: string;
+}
 
 // TODO: Define a class for the Weather object
 /*
@@ -29,16 +29,15 @@ dotenv.config();
 
 // TODO: Complete the WeatherService class
 class WeatherService {
+  private city: string = '';
   // TODO: Define the baseURL, API key, and city name properties
-  // private baseURL: string;
-  // private apiKey: string;
-  // private cityName: string;
+  private baseURL: string;
+  private apiKey: string;
 
-  // constructor() {
-  //   this.baseURL = process.env.BASE_URL || '';
-  //   this.apiKey = process.env.API_KEY || '';
-  //   this.cityName = process.env.CITY_NAME || '';
-  // }
+  constructor() {
+    this.baseURL = process.env.API_BASE_URL || '';
+    this.apiKey = process.env.API_KEY || '';
+  }
   
   // TODO: Create fetchLocationData method
   /*
@@ -47,18 +46,34 @@ class WeatherService {
    *
    */
   // private async fetchLocationData(query: string) {
-  //   try {
-  //     const response = await fetch(query);
+  private async fetchLocationData(query: string) {
+    try {
+      const response = await fetch(query);
 
-  //     //const parks = await response.json();
+      if (!response.ok) {
+        throw new Error(`Error fetching location data: ${response.statusText}`);
+      }
 
-  //     //const mappedParks = await this.parkDataMapping(parks.data);
-  //     //return mappedParks;
-  //   } catch(err) {
-  //     console.log('Error:', err);
-  //     return err;
-  //   }
-  // }
+      const data = await response.json();
+
+      if (data.length === 0) {
+        throw new Error('No location data found');
+      }
+
+      const coordinates: Coordinates = {
+        lat: data[0].lat,
+        lon: data[0].lon
+      };
+      
+      console.log("fetchLocationData:", this.city, coordinates);
+
+      return coordinates;
+
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
 
   // TODO: Create destructureLocationData method
   // private destructureLocationData(locationData: Coordinates): Coordinates {}
@@ -70,12 +85,30 @@ class WeatherService {
    * 
    */
   // private buildGeocodeQuery(): string {
-  //   const queryCityLimit = 1; // Only return 1 city coordinate. This could be improved
+  private buildGeocodeQuery(): string {
+    const queryCityLimit = 1; // Only return 1 city coordinate. This could be improved
     
-  //   let query = `${this.baseURL}/geo/1.0/direct?q=${this.cityName}&limit=${queryCityLimit}&appid=${this.apiKey}`;
+    let query = `${this.baseURL}/geo/1.0/direct?q=${encodeURIComponent(this.city)}&limit=${queryCityLimit}&appid=${this.apiKey}`;
+    
+    if (! this.isValidUrl(query)) {
+      throw new Error('buildGeocodeQuery(): Invalid URL');
+    }
 
-  //   return query;
-  // }
+    return query;
+  }
+
+  /*
+   * isValidUrl
+   *
+   */
+  private isValidUrl = (urlString: string): boolean => {
+    try {
+      new URL(urlString);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
   
   // TODO: Create buildWeatherQuery method
   /*
@@ -120,7 +153,7 @@ class WeatherService {
   // private async fetchWeatherData(coordinates: Coordinates) {
 
   // }
-  
+
   // TODO: Build parseCurrentWeather method
   /*
    * Parses the response from the weather API, then extracts weather 
@@ -148,6 +181,10 @@ class WeatherService {
    */
   async getWeatherForCity(city: string) {
     console.log("getWeatherForCity", city);
+    this.city = city;
+    const queryLocation = this.buildGeocodeQuery();
+    this.fetchLocationData(queryLocation);
+
     // fetchAndDestructureLocationData()
 
     // buildWeatherQuery(lat, lon): Constructs the weather query using the obtained latitude and longitude.
