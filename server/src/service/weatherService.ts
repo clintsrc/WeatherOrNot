@@ -20,7 +20,7 @@ interface Coordinates {
 
 // TODO: Define a class for the Weather object
 /*
- * Weather data (e.g. date, temp, wind, humidity).
+ * Weather data (e.g.  date, icon, iconDescription, tempF, windSpeed, humidity).
  *
  */
 // class Weather {
@@ -46,7 +46,7 @@ class WeatherService {
    *
    */
   // private async fetchLocationData(query: string) {
-  private async fetchLocationData(query: string) {
+  private async fetchLocationData(query: string): Promise<any> {
     try {
       const response = await fetch(query);
 
@@ -54,20 +54,13 @@ class WeatherService {
         throw new Error(`Error fetching location data: ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const locationData = await response.json();
 
-      if (data.length === 0) {
+      if (locationData.length === 0) {
         throw new Error('No location data found');
       }
-
-      const coordinates: Coordinates = {
-        lat: data[0].lat,
-        lon: data[0].lon
-      };
       
-      console.log("fetchLocationData:", this.city, coordinates);
-
-      return coordinates;
+      return locationData;
 
     } catch (error) {
       console.error(error);
@@ -76,8 +69,17 @@ class WeatherService {
   }
 
   // TODO: Create destructureLocationData method
-  // private destructureLocationData(locationData: Coordinates): Coordinates {}
-  
+  //private destructureLocationData(locationData: Coordinates): Coordinates {
+  private destructureLocationData(locationData: any): Coordinates {
+    const { lat, lon } = locationData[0];
+
+    if (!lat || !lon) {
+      throw new Error('Coordinates not found in location data');
+    }
+    
+    return { lat, lon };
+  }
+
   // TODO: Create buildGeocodeQuery method
   /*
    * Construct the query string for the geocoding API
@@ -104,6 +106,7 @@ class WeatherService {
   private isValidUrl = (urlString: string): boolean => {
     try {
       new URL(urlString);
+
       return true;
     } catch (e) {
       return false;
@@ -125,10 +128,15 @@ class WeatherService {
    *
    */
   // private buildWeatherQuery(coordinates: Coordinates): string {
-  //   let query = `${this.baseURL}/data/2.5/forecast?lat=${coordinates.latitude}&lon=${coordinates.longitude}&appid=${this.apiKey}`;
+  private buildWeatherQuery(coordinates: Coordinates): string {
+    let query = `${this.baseURL}/data/2.5/forecast?lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${this.apiKey}`;
     
-  //   return query;
-  // }
+    if (! this.isValidUrl(query)) {
+      throw new Error('buildWeatherQuery(): Invalid URL');
+    }
+
+    return query;
+  }
   
   // TODO: Create fetchAndDestructureLocationData method
   /*
@@ -139,10 +147,18 @@ class WeatherService {
    *    return... does this mean indirectly through the coordinate?
    *
    */
-  // private async fetchAndDestructureLocationData() {
-  //   // fetchLocationData(city): This method makes the API call to get the location data for the specified city.
-  //   // destructureLocationData(locationData): This method is called to extract the latitude and longitude from the location data returned by fetchLocationData.
-  // }
+  private async fetchAndDestructureLocationData(): Promise<Coordinates> {
+    // generate a query string for the city coordinates
+    const queryLocation = this.buildGeocodeQuery();
+
+    // execute the query
+    const locationData = await this.fetchLocationData(queryLocation);
+
+    // update a coordinates object for use later in the weather forecast query
+    const coordinates: Coordinates = this.destructureLocationData(locationData);
+
+    return coordinates;
+  }
   
   // TODO: Create fetchWeatherData method
   /*
@@ -151,8 +167,31 @@ class WeatherService {
    *
    */
   // private async fetchWeatherData(coordinates: Coordinates) {
+  private async fetchWeatherData(coordinates: Coordinates) {
 
-  // }
+    const query = this.buildWeatherQuery(coordinates);
+
+    try {
+      const response = await fetch(query);
+
+      if (!response.ok) {
+        throw new Error(`Error fetching weather forecast data: ${response.statusText}`);
+      }
+
+      const weatherData = await response.json();
+
+      if (weatherData.length === 0) {
+        throw new Error('No weather forecast data found');
+      }
+      
+      console.log(weatherData);
+
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+
+  }
 
   // TODO: Build parseCurrentWeather method
   /*
@@ -182,13 +221,9 @@ class WeatherService {
   async getWeatherForCity(city: string) {
     console.log("getWeatherForCity", city);
     this.city = city;
-    const queryLocation = this.buildGeocodeQuery();
-    this.fetchLocationData(queryLocation);
+    const coordinates = await this.fetchAndDestructureLocationData();
+    this.fetchWeatherData(coordinates);
 
-    // fetchAndDestructureLocationData()
-
-    // buildWeatherQuery(lat, lon): Constructs the weather query using the obtained latitude and longitude.
-    // fetchWeatherData(weatherQuery): Fetches the weather data using the constructed query.
     // parseCurrentWeather(weatherData): Parses the current weather information from the fetched weather data.
     // buildForecastArray(weatherData): Builds an array of the forecast data from the fetched weather data.
 
