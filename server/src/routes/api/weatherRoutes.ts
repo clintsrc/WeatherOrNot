@@ -14,8 +14,10 @@ router.post('/', async (req: Request, res: Response) => {
 
   if (cityName) {
     try {
-      const weatherData = await WeatherService.getWeatherForCity(cityName);
-      await HistoryService.addCity(cityName);
+      const weatherData = await WeatherService.getWeatherForCity(cityName)
+      // Use the verified city name that OpenWeather retrieved
+      console.info(`${req.method} update the history: ${weatherData[0].city}`);
+      await HistoryService.addCity(weatherData[0].city);
       res.status(200).json(weatherData);
     } catch (error) {
       res.status(500).send('Error retrieving weather data');
