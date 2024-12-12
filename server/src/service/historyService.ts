@@ -1,7 +1,13 @@
 import fs from 'node:fs/promises';
 import {v4 as uuidv4} from 'uuid';
 
-// TODO: Define a City class with name and id properties
+/*
+ * City class
+ *
+ * The HistoryService class works with information about a City
+ * 
+ */
+
 class City {
   name: string;
   id: string;
@@ -12,9 +18,30 @@ class City {
   }
 }
 
-// TODO: Complete the HistoryService class
+/*
+ * HistoryService class
+ *
+ * Cities that the user submits to the front end are logged as a record 
+ * in 'database' file: db/searchHistory.json. If the file doesn't exist
+ * the class creates it with an append
+ * 
+ * Each entry has a unique UUID for the city which the user can use like a
+ * bookmark such that when the select a city in the history it the app
+ * will retrieve a fresh weather reading and forecast
+ * 
+ * The user can choose to delete a record from the 
+ * history (db/searchHistory.json)
+ *
+ */
 class HistoryService {
-  // TODO: Define a read method that reads from the searchHistory.json file
+
+  /*
+   * read()
+   * 
+   * Reads the User's city search history from a searchHistory.json file. 
+   * If the file doesn't exist it will be created.
+   * 
+   */
   private async read() {
     return await fs.readFile('db/searchHistory.json', {
       flag: 'a+',   // append to create the file if it doesn't exist
@@ -22,13 +49,25 @@ class HistoryService {
     });
   }
 
-  // Define a write method that writes the updated cities array to the searchHistory.json file
+  /*
+   * write()
+   * 
+   * Write the updated cities array to the searchHistory.json file
+   * 
+   */
   private async write(cities: City[]) {
     return await fs.writeFile(
       'db/searchHistory.json', JSON.stringify(cities, null, '\t'));
   }
 
-  // TODO: Define a getCities method that reads the cities from the searchHistory.json file and returns them as an array of City objects
+  /*
+   * getCities()
+   * 
+   * Read the City records from the searchHistory.json file
+   * 
+   * Return the records in an array of City objects
+   * 
+   */
   async getCities() {
     return await this.read().then((cities) => {
       let parsedCities: City[];
@@ -43,17 +82,27 @@ class HistoryService {
     });
   }
 
-  // TODO Define an addCity method that adds a city to the searchHistory.json file
+  /*
+   * addCity()
+   * 
+   * Add a city record to the searchHistory.json file after the user has
+   * queried the OpenWeather API for weather data
+   * 
+   * Return an array of the City records for the client to use further as
+   * needed
+   * 
+   */
   async addCity(city: string) {
     if (!city) {
       throw new Error('city cannot be blank');
     }
 
-    // Add a unique id to the city using uuid package
+    // Track each city adding a unique index id to the city using uuid package
     const newCity: City = { name: city, id: uuidv4() };
 
-    ///////////
-    // Get all cities, add the new city, write all the updated cities, return the newCity
+    // Read all cities, add the new city, write all the updated cities, 
+    // return the newCity or an array of cities including the newCity
+    // if others already existed
     return await this.getCities()
     .then((cities) => {
       if (cities.find((index) => index.name === city)) {
@@ -65,7 +114,13 @@ class HistoryService {
     .then(() => newCity);
   }
 
-  // * BONUS TODO: Define a removeCity method that removes a city from the searchHistory.json file
+  /*
+   * removeCity()
+   * 
+   * Delete a city from the searchHistory.json file by its unique 
+   * ID (uuid4 index)
+   * 
+   */
   async removeCity(id: string) {
     return await this.getCities()
       .then(
