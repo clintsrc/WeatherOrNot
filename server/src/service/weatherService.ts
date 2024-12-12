@@ -74,9 +74,13 @@ class WeatherService {
       const locationData = await response.json();
 
       if (locationData.length === 0) {
-        throw new Error('No location data found');
+        throw new Error(`No location data found for city name: ${this.city}`);
+      } else {
+        // Update the user input city with the formal name that the
+        //    query retrieved
+        this.city = locationData[0].name;
       }
-      
+
       return locationData;
 
     } catch (error) {
@@ -267,7 +271,7 @@ class WeatherService {
    * 
    */
   async getWeatherForCity(city: string): Promise<Weather[]> {
-    console.log("getWeatherForCity", city);
+    console.info(`${this.getWeatherForCity.name} will lookup ${city}`);
     this.city = city;
 
     const coordinates = await this.fetchAndDestructureLocationData();
