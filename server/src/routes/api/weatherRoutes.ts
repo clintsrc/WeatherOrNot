@@ -19,6 +19,10 @@ router.post('/', (req: Request, res: Response) => {
 
 // TODO: GET search history
 //router.get('/history', async (req: Request, res: Response) => {});
+router.get('/history', async (req: Request, res: Response) => {
+  console.info(`${req.method} request received for history`);
+  HistoryService.getCities().then((data) => res.json(data));
+});
 
 // * BONUS TODO: DELETE city from search history
 //router.delete('/history/:id', async (req: Request, res: Response) => {});
