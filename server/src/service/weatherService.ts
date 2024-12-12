@@ -23,9 +23,24 @@ interface Coordinates {
  * Weather data (e.g.  date, icon, iconDescription, tempF, windSpeed, humidity).
  *
  */
-// class Weather {
-//   //
-// }
+class Weather {
+  date: string;
+  icon: string;
+  iconDescription: string;
+  tempF: number;
+  windSpeed: number;
+  humidity: number;
+
+  constructor(date: string, icon: string, iconDescription: string, tempF: number, windSpeed: number, humidity: number) {
+    this.date = date;
+    this.icon = icon;
+    this.iconDescription = iconDescription;
+    this.tempF = tempF;
+    this.windSpeed = windSpeed;
+    this.humidity = humidity;
+  }
+
+}
 
 // TODO: Complete the WeatherService class
 class WeatherService {
@@ -143,9 +158,6 @@ class WeatherService {
    * This method handles both fetching the location data and destructuring the 
    * response data.
    * 
-   * It returns the city coordinates  // TODO does it? the sig doesn't have a
-   *    return... does this mean indirectly through the coordinate?
-   *
    */
   private async fetchAndDestructureLocationData(): Promise<Coordinates> {
     // generate a query string for the city coordinates
@@ -167,8 +179,7 @@ class WeatherService {
    *
    */
   // private async fetchWeatherData(coordinates: Coordinates) {
-  private async fetchWeatherData(coordinates: Coordinates) {
-
+  private async fetchWeatherData(coordinates: Coordinates): Promise<any> {
     const query = this.buildWeatherQuery(coordinates);
 
     try {
@@ -184,7 +195,7 @@ class WeatherService {
         throw new Error('No weather forecast data found');
       }
       
-      console.log(weatherData);
+      return weatherData;
 
     } catch (error) {
       console.error(error);
@@ -200,6 +211,21 @@ class WeatherService {
    *
    */
   //private parseCurrentWeather(response: any) {}
+  private parseCurrentWeather(response: any): Weather {
+    const { dt_txt, weather, main, wind } = response;
+
+    const date = dt_txt;
+    const icon = weather[0].icon;
+    const iconDescription = weather[0].description;
+    const tempK = main.temp;
+    const tempF = (tempK - 273.15) * 9/5 + 32; // Convert Kelvin to Fahrenheit
+    const windSpeed = wind.speed;
+    const humidity = main.humidity;
+
+    let weatherReading = new Weather(date, icon, iconDescription, tempF, windSpeed, humidity);
+
+    return weatherReading;
+  }
   
   // TODO: Complete buildForecastArray method
   /*
@@ -207,9 +233,22 @@ class WeatherService {
    * providing a 5-day weather forecast
    *
    */
-  // private buildForecastArray(currentWeather: Weather, weatherData: any[]) {
-
-  // }
+  // private buildForecastArray(currentWeather: Weather, weatherData: any[])
+  private buildForecastArray(weatherData: any[]): Weather[] {
+      const dailyForecasts: { [key: string]: Weather } = {};
+  
+      weatherData.forEach((data: any) => {
+          const date = data.dt_txt.split(" ")[0]; // Extract the date part (YYYY-MM-DD)
+  
+          // The data contains multiple records per day, only keep one daily reading
+          if (! dailyForecasts[date]) {
+            dailyForecasts[date] = this.parseCurrentWeather(data);
+          }
+      });
+  
+      // Return the values as an array
+      return Object.values(dailyForecasts);
+  }
   
   // TODO: Complete getWeatherForCity method
   /*
@@ -218,16 +257,18 @@ class WeatherService {
    * then parses the response for and returns the 5-day forecast
    * 
    */
-  async getWeatherForCity(city: string) {
+  async getWeatherForCity(city: string): Promise<Weather[]> {
     console.log("getWeatherForCity", city);
     this.city = city;
+
     const coordinates = await this.fetchAndDestructureLocationData();
-    this.fetchWeatherData(coordinates);
 
-    // parseCurrentWeather(weatherData): Parses the current weather information from the fetched weather data.
-    // buildForecastArray(weatherData): Builds an array of the forecast data from the fetched weather data.
+    const weatherData = await this.fetchWeatherData(coordinates);
 
-    // return the parsed data: The parsed current weather data and the forecast array are returned to the caller.
+    const wd = this.buildForecastArray(weatherData.list);
+
+    //console.log(wd);
+    return wd;
   }
 
 }
