@@ -267,7 +267,7 @@ class WeatherService {
 
     const wd = this.buildForecastArray(weatherData.list);
 
-    console.log(wd);
+    //console.log(wd);
     return wd;
   }
 
