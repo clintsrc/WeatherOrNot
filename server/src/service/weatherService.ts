@@ -24,6 +24,7 @@ interface Coordinates {
  *
  */
 class Weather {
+  city: string;
   date: string;
   icon: string;
   iconDescription: string;
@@ -31,7 +32,8 @@ class Weather {
   windSpeed: number;
   humidity: number;
 
-  constructor(date: string, icon: string, iconDescription: string, tempF: number, windSpeed: number, humidity: number) {
+  constructor(city: string, date: string, icon: string, iconDescription: string, tempF: number, windSpeed: number, humidity: number) {
+    this.city = city;
     this.date = date;
     this.icon = icon;
     this.iconDescription = iconDescription;
@@ -144,7 +146,7 @@ class WeatherService {
    */
   // private buildWeatherQuery(coordinates: Coordinates): string {
   private buildWeatherQuery(coordinates: Coordinates): string {
-    let query = `${this.baseURL}/data/2.5/forecast?lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${this.apiKey}`;
+    let query = `${this.baseURL}/data/2.5/forecast?units=imperial&lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${this.apiKey}`;
     
     if (! this.isValidUrl(query)) {
       throw new Error('buildWeatherQuery(): Invalid URL');
@@ -214,19 +216,26 @@ class WeatherService {
   private parseCurrentWeather(response: any): Weather {
     const { dt_txt, weather, main, wind } = response;
 
-    const date = dt_txt;
+    const date = this.convertDate(dt_txt);
     const icon = weather[0].icon;
     const iconDescription = weather[0].description;
-    const tempK = main.temp;
-    const tempF = (tempK - 273.15) * 9/5 + 32; // Convert Kelvin to Fahrenheit
+    const tempF = main.temp;
     const windSpeed = wind.speed;
     const humidity = main.humidity;
 
-    let weatherReading = new Weather(date, icon, iconDescription, tempF, windSpeed, humidity);
+    let weatherReading = new Weather(this.city, date, icon, iconDescription, tempF, windSpeed, humidity);
 
     return weatherReading;
   }
   
+  private convertDate(fullDate: string) {
+
+    const date = new Date(fullDate);
+    const formatter = new Intl.DateTimeFormat('en-US', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+    return formatter.format(date);
+  }
+
   // TODO: Complete buildForecastArray method
   /*
    * Processes the weather data and generates an array of forecast objects
